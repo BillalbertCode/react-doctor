@@ -3,9 +3,21 @@ import path from "node:path";
 import type { Diagnostic, ReactDoctorConfig } from "../types.js";
 import { compileGlobPattern } from "./match-glob-pattern.js";
 
+const makeRelativePath = (filePath: string, rootDirectory: string): string => {
+  const normalizedFilePath = filePath.replace(/\\/g, "/");
+  const normalizedRoot = rootDirectory.replace(/\\/g, "/").replace(/\/$/, "") + "/";
+
+  if (normalizedFilePath.startsWith(normalizedRoot)) {
+    return normalizedFilePath.slice(normalizedRoot.length);
+  }
+
+  return normalizedFilePath.replace(/^\.\//, "");
+};
+
 export const filterIgnoredDiagnostics = (
   diagnostics: Diagnostic[],
   config: ReactDoctorConfig,
+  rootDirectory: string,
 ): Diagnostic[] => {
   const ignoredRules = new Set(Array.isArray(config.ignore?.rules) ? config.ignore.rules : []);
   const ignoredFilePatterns = Array.isArray(config.ignore?.files)
@@ -22,8 +34,8 @@ export const filterIgnoredDiagnostics = (
       return false;
     }
 
-    const normalizedPath = diagnostic.filePath.replace(/\\/g, "/").replace(/^\.\//, "");
-    if (ignoredFilePatterns.some((pattern) => pattern.test(normalizedPath))) {
+    const relativePath = makeRelativePath(diagnostic.filePath, rootDirectory);
+    if (ignoredFilePatterns.some((pattern) => pattern.test(relativePath))) {
       return false;
     }
 
