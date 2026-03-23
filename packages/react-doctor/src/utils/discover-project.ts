@@ -187,7 +187,10 @@ const parsePnpmWorkspaceCatalogs = (rootDirectory: string): CatalogCollection =>
       const colonIndex = trimmed.indexOf(":");
       if (colonIndex > 0) {
         const key = trimmed.slice(0, colonIndex).trim().replace(/["']/g, "");
-        const value = trimmed.slice(colonIndex + 1).trim().replace(/["']/g, "");
+        const value = trimmed
+          .slice(colonIndex + 1)
+          .trim()
+          .replace(/["']/g, "");
         if (key && value) defaultCatalog[key] = value;
       }
       continue;
@@ -211,7 +214,10 @@ const parsePnpmWorkspaceCatalogs = (rootDirectory: string): CatalogCollection =>
       const colonIndex = trimmed.indexOf(":");
       if (colonIndex > 0 && currentCatalogName) {
         const key = trimmed.slice(0, colonIndex).trim().replace(/["']/g, "");
-        const value = trimmed.slice(colonIndex + 1).trim().replace(/["']/g, "");
+        const value = trimmed
+          .slice(colonIndex + 1)
+          .trim()
+          .replace(/["']/g, "");
         if (key && value) namedCatalogs[currentCatalogName][key] = value;
       }
     }
@@ -282,11 +288,7 @@ const resolveCatalogVersion = (
 
   if (rootDirectory) {
     const pnpmCatalogs = parsePnpmWorkspaceCatalogs(rootDirectory);
-    const pnpmVersion = resolveCatalogVersionFromCollection(
-      pnpmCatalogs,
-      packageName,
-      catalogName,
-    );
+    const pnpmVersion = resolveCatalogVersionFromCollection(pnpmCatalogs, packageName, catalogName);
     if (pnpmVersion) return pnpmVersion;
   }
 
